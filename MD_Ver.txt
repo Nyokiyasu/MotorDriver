@@ -1,0 +1,31 @@
+﻿v0.1.0(未完成)
+	H-Bridge : Full-Nch
+	FET : IRFI3205
+	Gate-Driver : A3941
+	Isolator : -
+	Micro-com : LPC1114FN28
+	PWM_Frequency : 20[kHz]
+
+v0.2.0(未完成)
+	[Changed]
+	FET : TK100E06N1
+	Isolator : ADUM1310
+	Micro-com : STM32F0
+	
+v0.2.1
+	基板の大きさ変更
+
+v0.3.0
+	2ch
+	ADC入力による位置制御可能
+	
+v0.3.1
+	2ch
+	エンコーダ入力による回転数制御可能
+v0.3.2
+	2ch
+	電流センサ入力によるトルク制御可能
+	
+v0.3.3
+	3ch
+	回転のみ
