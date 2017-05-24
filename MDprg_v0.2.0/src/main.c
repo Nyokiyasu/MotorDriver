@@ -16,24 +16,29 @@ int main()
   // At this stage the system clock should have already been configured
   // at high speed.
 
-	GPIO_InitTypeDef init_buf;
+	GPIO_InitTypeDef init_gpio;
+	TIM_TimeBaseInitTypeDef init_tmr;
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1,ENABLE);
 
-	/*GPIO setting*/
+	/*setting*/
+	/*GPIO*/
 	/*PORTB*/
-	GPIO_StructInit(&init_buf);
-	init_buf.GPIO_Pin &= 0x0003;	//0,1Çê›íË
-	init_buf.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_Init(GPIOB,&init_buf);
+	GPIO_StructInit(&init_gpio);
+	init_gpio.GPIO_Pin &= 0x0003;	//0,1Çê›íË
+	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_Init(GPIOB,&init_gpio);
 	/*PORTA*/
-	GPIO_StructInit(&init_buf);
-	init_buf.GPIO_Pin &= 0x0010;	//4Çê›íË
-	init_buf.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_Init(GPIOA,&init_buf);
-	/*Timer1*/
+	GPIO_StructInit(&init_gpio);
+	init_gpio.GPIO_Pin &= 0x0010;	//4Çê›íË
+	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_Init(GPIOA,&init_gpio);
+	/*Timer*/
+	/*TIM1*/
+	TIM_TimeBaseStructInit(init_tmr);
 
+	TIM_TimeBaseInit(TIM1,init_tmr);
 
 	/*End etting*/
 
