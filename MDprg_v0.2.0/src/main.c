@@ -31,22 +31,25 @@ int main()
 	GPIO_Init(GPIOB,&init_gpio);
 	/*PORTA*/
 	GPIO_StructInit(&init_gpio);
-	init_gpio.GPIO_Pin &= 0x0010;	//4Çê›íË
+	init_gpio.GPIO_Pin &= 0x001E;	//1,2,3,4Çê›íË
 	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_Init(GPIOA,&init_gpio);
 	/*Timer*/
 	/*TIM1*/
-	TIM_TimeBaseStructInit(init_tmr);
+//	TIM_TimeBaseStructInit(&init_tmr);
 
-	TIM_TimeBaseInit(TIM1,init_tmr);
+//	TIM_TimeBaseInit(TIM1,&init_tmr);
 
 	/*End etting*/
 
-	GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_SET);
-	GPIO_WriteBit(GPIOB,GPIO_Pin_1,Bit_SET);
+	GPIO_WriteBit(GPIOA,GPIO_Pin_1,Bit_SET);
+	GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
+	GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_RESET);
 	GPIO_WriteBit(GPIOA,GPIO_Pin_4,Bit_RESET);
 
-	//	GPIO_Write(GPIOB,0xAA00);
+	GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_RESET);
+	GPIO_WriteBit(GPIOB,GPIO_Pin_1,Bit_SET);
+
 
   // Infinite loop
   while (1)
