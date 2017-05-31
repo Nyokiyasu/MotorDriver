@@ -37,11 +37,11 @@ int main()
 	/*Timer*/
 	/*TIM1*/
 //	TIM_TimeBaseStructInit(&init_tmr);
-
 //	TIM_TimeBaseInit(TIM1,&init_tmr);
 
-	/*End etting*/
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource1,GPIO_AF_2);
 
+	/*End etting*/
 	GPIO_WriteBit(GPIOA,GPIO_Pin_1,Bit_SET);
 	GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
 	GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_RESET);
