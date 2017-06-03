@@ -37,19 +37,29 @@ int main()
 	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_Init(GPIOA,&init_gpio);
 
+	GPIO_StructInit(&init_gpio);
+	init_gpio.GPIO_Pin &= 0x0100;	//8
+	init_gpio.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_Init(GPIOA,&init_gpio);
+
 	/*Timer*/
 	/*TIM1*/
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource1,GPIO_AF_2);
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource8,GPIO_AF_2);
+	GPIO_PinLockConfig(GPIOA,GPIO_Pin_8);
 	TIM_TimeBaseStructInit(&init_tmr);
+
 	init_tmr.TIM_Period = 100;
 	init_tmr.TIM_Prescaler = 48;
 	TIM_TimeBaseInit(TIM1,&init_tmr);
-//	TIM_CtrlPWMOutputs(TIM1,ENABLE);	//出力するために使うかも
+
+	TIM_CtrlPWMOutputs(TIM1,ENABLE);	//出力するために使うかも
 	TIM_OCStructInit(&init_OC);
 	init_OC.TIM_OCMode = TIM_OCMode_PWM1;
-	init_OC.TIM_OutputState = 50;
+	init_OC.TIM_Pulse = 50;
 	init_OC.TIM_OutputState = TIM_OutputState_Enable;
 	TIM_OC1Init(TIM1,&init_OC);
+
+	TIM_ARRPreloadConfig(TIM1,ENABLE);
 //	TIM_ITConfig();	//タイマ割り込みをする際に使用する
 
 
