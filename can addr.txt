@@ -1,0 +1,32 @@
+優先度　5bit
+
+
+機能　6bit
+0 x x1 マスター
+　　アクチュエータ
+        0 x x2 PWM
+            Send
+                1Byte
+                    Mode
+                    Feq MAX 200kHz
+                2Byte
+                    ch - 4bit
+                    0State - 4bit
+                3Byte
+                    Dir + PWM
+
+            Reply
+                成功すればそのまま
+                失敗したら1Byte目が全て1
+                
+        0 x x3 シリンダ
+        0 x x4 ロリコン
+        0 x x5 ポテンショ
+        0 x x6 電流
+
+0 x x7 DIO
+0 x x8 ADC
+0 x x9 ロリコン
+
+
+00000000000 非常停止
