@@ -1,4 +1,4 @@
-/**
+﻿/**
   ******************************************************************************
   * @file    main.c
   * @author  Ac6
@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include "stm32f0xx_conf.h"
 
+#define BRAKE_VALUE -128
+
+typedef enum {coast=0,forward,backforward,brake} SUPPLY_STATE_t;
 
 int main()
 {
@@ -33,15 +36,15 @@ int main()
 	GPIO_Init(GPIOB,&init_gpio);
 	/*PORTA*/
 	GPIO_StructInit(&init_gpio);
-	init_gpio.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_3|GPIO_Pin_2;	//
+	init_gpio.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_3|GPIO_Pin_1;	//
 	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_Init(GPIOA,&init_gpio);
 
 	GPIO_StructInit(&init_gpio);
-	init_gpio.GPIO_Pin = GPIO_Pin_1;	//1
+	init_gpio.GPIO_Pin = GPIO_Pin_2;	//1
 	init_gpio.GPIO_Mode = GPIO_Mode_AF;
 	GPIO_Init(GPIOA,&init_gpio);
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource1,GPIO_AF_2);
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource2,GPIO_AF_2);
 
 	/*Timer*/
 	/*TIM2*/
@@ -57,7 +60,7 @@ int main()
 	init_OC.TIM_OutputState = TIM_OutputState_Enable;
 	init_OC.TIM_OCIdleState = TIM_OCIdleState_Set;
 	init_OC.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OC2Init(TIM2,&init_OC);
+	TIM_OC3Init(TIM2,&init_OC);
 	TIM_Cmd(TIM2,ENABLE);
 
 	TIM_ARRPreloadConfig(TIM2,ENABLE);
@@ -81,4 +84,61 @@ int main()
     {
        // Add your code here.
     }
+}
+
+
+/****************************
+ * COAST:H=0,L=0,PHASE=X
+ * Forward:H=1,L=PWM,PHASE=1
+ * BackForward:H=1,L=PWM,PHASE=0
+ * Brake:H=1,L=0,PHASE=X
+ ****************************/
+
+/**
+ * @brief	Set PWM by frame of A3941.
+ * @param	ch: Select the apply channel.
+ * @param	duty: You must keep the value between -100 and 100
+ * @note	If you want apply a brake , then pass -128.
+ * @retaval	None
+ */
+
+void PWM_control(uint8_t ch , int8_t  duty)
+{
+	SUPPLY_STATE_t dir=coast;
+
+	if (duty == BRAKE_VALUE)
+	{
+		dir = brake;
+		duty = 0;
+	}
+	else if (duty>0) dir = forward;
+	else if (duty<0)
+	{
+		dir = backforward;
+		duty = -duty;
+	}
+
+	if(duty > 100)	duty = 100;
+	duty = 100-duty;
+
+	switch (ch){
+	case 0:
+		GPIO_WriteBit(GPIOA,GPIO_Pin_3,!(dir&0b1));		//PHASEの設定
+		GPIO_WriteBit(GPIOA,GPIO_Pin_1,!(dir&0b11));	//PWM_Hの設定
+		TIM_SetCompare3(TIM2,duty);						//PWM_Lの出力
+		break;
+	case 1:
+		//何もないけどチャンネル増えたら書き加える
+	}
+	return;
+}
+
+
+/**
+ * @brief	Set PWM by frame of A3941. Param is CAN_frame.
+ *
+ */
+void PWM_control_CF(void)
+{
+
 }
