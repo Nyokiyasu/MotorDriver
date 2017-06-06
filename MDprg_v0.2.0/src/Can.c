@@ -29,6 +29,7 @@ void CanInit()
 
 	CAN_Init(CAN, &CAN_InitStructure);
 
+
 //	じーぴーあいおーのしゅつりょくせってい
 
 //	おるたねーとふぁんくしょんのせってい
@@ -41,10 +42,10 @@ void CanFilterInit(int id, int mode, int num, int scale, int fifo)
 	CAN_FilterInitTypeDef FilterInitStructure;
 	FilterInitStructure.CAN_FilterActivation = ENABLE;
 	FilterInitStructure.CAN_FilterMode = mode;
-	FilterInitStructure.CAN_FilterMaskIdHigh = ;
-	FilterInitStructure.CAN_FilterMaskIdLow = ;
-	FilterInitStructure.CAN_FilterIdHigh = ;
-	FilterInitStructure.CAN_FilterIdLow = ;
+//	FilterInitStructure.CAN_FilterMaskIdHigh = ;
+//	FilterInitStructure.CAN_FilterMaskIdLow = ;
+//	FilterInitStructure.CAN_FilterIdHigh = ;
+//	FilterInitStructure.CAN_FilterIdLow = ;
 	if(num > 14)	num = 13;
 	FilterInitStructure.CAN_FilterNumber = num;
 	FilterInitStructure.CAN_FilterScale = scale;

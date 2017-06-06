@@ -128,6 +128,7 @@ void PWM_control(uint8_t ch , int8_t  duty)
 		TIM_SetCompare3(TIM2,duty);						//PWM_Lの出力
 		break;
 	case 1:
+		break;
 		//何もないけどチャンネル増えたら書き加える
 	}
 	return;
