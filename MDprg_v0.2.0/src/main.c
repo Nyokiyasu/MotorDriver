@@ -126,7 +126,7 @@ void PWM_control(uint8_t ch , int8_t  duty)
 	switch (ch){
 	case 0:
 		GPIO_WriteBit(GPIOA,GPIO_Pin_3,!(dir&0b1));		//PHASEの設定
-		GPIO_WriteBit(GPIOA,GPIO_Pin_1,(dir&0b11));	//PWM_Hの設定
+		GPIO_WriteBit(GPIOA,GPIO_Pin_1,!!(dir&0b11));	//PWM_Hの設定
 		TIM_SetCompare3(TIM2,duty);						//PWM_Lの出力
 		break;
 	case 1:
