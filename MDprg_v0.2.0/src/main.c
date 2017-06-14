@@ -14,6 +14,8 @@
 
 typedef enum {coast=0,forward,backforward,brake} SUPPLY_STATE_t;
 
+void PWM_control(uint8_t ch , int8_t  duty);
+
 int main()
 {
   // At this stage the system clock should have already been configured
@@ -56,7 +58,7 @@ int main()
 	TIM_TimeBaseInit(TIM2,&init_tmr);
 
 	init_OC.TIM_OCMode = TIM_OCMode_PWM1;
-	init_OC.TIM_Pulse = 50;
+	init_OC.TIM_Pulse = 0;
 	init_OC.TIM_OutputState = TIM_OutputState_Enable;
 	init_OC.TIM_OCIdleState = TIM_OCIdleState_Set;
 	init_OC.TIM_OCPolarity = TIM_OCPolarity_High;
@@ -70,15 +72,16 @@ int main()
 
 	/*End setting*/
 
-//	GPIO_WriteBit(GPIOA,GPIO_Pin_1,Bit_SET);
-	GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
+	GPIO_WriteBit(GPIOA,GPIO_Pin_1,Bit_SET);
+//	GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
 	GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_SET);
 
 	GPIO_WriteBit(GPIOA,GPIO_Pin_4,Bit_RESET);
-	GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_SET);
+	GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_RESET);
 	GPIO_WriteBit(GPIOB,GPIO_Pin_1,Bit_SET);
 
 
+	PWM_control(0,30);
   // Infinite loop
   while (1)
     {
@@ -119,12 +122,11 @@ void PWM_control(uint8_t ch , int8_t  duty)
 	}
 
 	if(duty > 100)	duty = 100;
-	duty = 100-duty;
 
 	switch (ch){
 	case 0:
 		GPIO_WriteBit(GPIOA,GPIO_Pin_3,!(dir&0b1));		//PHASEの設定
-		GPIO_WriteBit(GPIOA,GPIO_Pin_1,!(dir&0b11));	//PWM_Hの設定
+		GPIO_WriteBit(GPIOA,GPIO_Pin_1,(dir&0b11));	//PWM_Hの設定
 		TIM_SetCompare3(TIM2,duty);						//PWM_Lの出力
 		break;
 	case 1:
