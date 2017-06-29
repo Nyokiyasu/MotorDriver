@@ -15,6 +15,10 @@
 typedef enum {coast=0,forward,backforward,brake} SUPPLY_STATE_t;
 
 void PWM_control(uint8_t ch , int8_t  duty);
+void LDEs_init(void);
+void ch0_init(void);
+
+//	TIM_ITConfig();	//タイマ割り込みをする際に使用する
 
 int main()
 {
@@ -22,53 +26,19 @@ int main()
   // at high speed.
 
 	GPIO_InitTypeDef init_gpio;
-	TIM_TimeBaseInitTypeDef init_tmr;
-	TIM_OCInitTypeDef init_OC;
-
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);
 
 	/*setting*/
-	/*GPIO*/
-	/*PORTB*/
-	GPIO_StructInit(&init_gpio);
-	init_gpio.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1;	//
+	/*LEDs*/
+	LDEs_init();
+
+	/*MotorControlPin*/
+	ch0_init();
+
+	/*LED確認用*/
+/*	GPIO_StructInit(&init_gpio);
+	init_gpio.GPIO_Pin = GPIO_Pin_4;
 	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_Init(GPIOB,&init_gpio);
-	/*PORTA*/
-	GPIO_StructInit(&init_gpio);
-	init_gpio.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_3|GPIO_Pin_1;	//
-	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_Init(GPIOA,&init_gpio);
-
-	GPIO_StructInit(&init_gpio);
-	init_gpio.GPIO_Pin = GPIO_Pin_2;	//1
-	init_gpio.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_Init(GPIOA,&init_gpio);
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource2,GPIO_AF_2);
-
-	/*Timer*/
-	/*TIM2*/
-	init_tmr.TIM_Period = 100-1;
-	init_tmr.TIM_Prescaler = 4-1;
-	init_tmr.TIM_ClockDivision = TIM_CKD_DIV1;
-	init_tmr.TIM_CounterMode = TIM_CounterMode_Up;
-	init_tmr.TIM_RepetitionCounter = 0x0000;
-	TIM_TimeBaseInit(TIM2,&init_tmr);
-
-	init_OC.TIM_OCMode = TIM_OCMode_PWM1;
-	init_OC.TIM_Pulse = 0;
-	init_OC.TIM_OutputState = TIM_OutputState_Enable;
-	init_OC.TIM_OCIdleState = TIM_OCIdleState_Set;
-	init_OC.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OC3Init(TIM2,&init_OC);
-	TIM_Cmd(TIM2,ENABLE);
-
-	TIM_ARRPreloadConfig(TIM2,ENABLE);
-//	TIM_ITConfig();	//タイマ割り込みをする際に使用する
-
-
+	GPIO_Init(GPIOA,&init_gpio);*/
 
 	/*End setting*/
 
@@ -144,4 +114,78 @@ void PWM_control(uint8_t ch , int8_t  duty)
 void PWM_control_CF(void)
 {
 
+}
+
+/**
+ * @brief
+ */
+void LDEs_init(void)
+{
+	GPIO_InitTypeDef init_gpio;
+
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
+
+	/*DIR0&DIR1*/
+	GPIO_StructInit(&init_gpio);
+	init_gpio.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1;	//
+	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_Init(GPIOB,&init_gpio);
+
+	/*PWM*/
+	GPIO_StructInit(&init_gpio);
+	init_gpio.GPIO_Pin = GPIO_Pin_4;	//1
+	init_gpio.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_Init(GPIOA,&init_gpio);
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource4,GPIO_AF_4);
+	//タイマー14の初期化必要
+
+
+	return;
+
+}
+
+/*
+ *
+ */
+
+void ch0_init(void)
+{
+	TIM_TimeBaseInitTypeDef init_tmr;
+	TIM_OCInitTypeDef init_OC;
+	GPIO_InitTypeDef init_gpio;
+
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);
+
+	/*PORTA 1,2,3*/
+	GPIO_StructInit(&init_gpio);
+	init_gpio.GPIO_Pin = GPIO_Pin_3|GPIO_Pin_1;	//
+	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_Init(GPIOA,&init_gpio);
+
+	GPIO_StructInit(&init_gpio);
+	init_gpio.GPIO_Pin = GPIO_Pin_2;	//1
+	init_gpio.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_Init(GPIOA,&init_gpio);
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource2,GPIO_AF_2);
+
+	/*timer2 ch1*/
+	init_tmr.TIM_Period = 100-1;
+	init_tmr.TIM_Prescaler = 4-1;
+	init_tmr.TIM_ClockDivision = TIM_CKD_DIV1;
+	init_tmr.TIM_CounterMode = TIM_CounterMode_Up;
+	init_tmr.TIM_RepetitionCounter = 0x0000;
+	TIM_TimeBaseInit(TIM2,&init_tmr);
+
+	init_OC.TIM_OCMode = TIM_OCMode_PWM1;
+	init_OC.TIM_Pulse = 0;
+	init_OC.TIM_OutputState = TIM_OutputState_Enable;
+	init_OC.TIM_OCIdleState = TIM_OCIdleState_Set;
+	init_OC.TIM_OCPolarity = TIM_OCPolarity_High;
+	TIM_OC3Init(TIM2,&init_OC);
+	TIM_Cmd(TIM2,ENABLE);
+
+	TIM_ARRPreloadConfig(TIM2,ENABLE);
+	return;
 }

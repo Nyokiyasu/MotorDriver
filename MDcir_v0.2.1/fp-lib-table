@@ -1,3 +1,2 @@
 (fp_lib_table
-  (lib (name thistunalib)(type KiCad)(uri "$(KISYSMOD)\\thistunalib.pretty")(options "")(descr ""))
 )
