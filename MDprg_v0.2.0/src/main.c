@@ -26,6 +26,7 @@ int main()
   // at high speed.
 
 	GPIO_InitTypeDef init_gpio;
+	ADC_InitTypeDef	init_ADC;
 
 	/*setting*/
 	/*LEDs*/
@@ -39,6 +40,20 @@ int main()
 	init_gpio.GPIO_Pin = GPIO_Pin_4;
 	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_Init(GPIOA,&init_gpio);*/
+
+	/*PORTA*/
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+
+	GPIO_StructInit(&init_gpio);
+	init_gpio.GPIO_Pin = GPIO_Pin_0;	//1
+	init_gpio.GPIO_Mode = GPIO_Mode_AN;
+	GPIO_Init(GPIOA,&init_gpio);
+
+	ADC_StructInit(&init_ADC);
+	ADC_Init(&init_ADC);
+//	ADC_ChannelConfig(); //サンプリングレートを設定可能
+
+	ADC_Cmd(ENABLE);
 
 	/*End setting*/
 
