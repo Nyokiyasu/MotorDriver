@@ -50,10 +50,10 @@ int main()
 	GPIO_Init(GPIOA,&init_gpio);
 
 	ADC_StructInit(&init_ADC);
-	ADC_Init(&init_ADC);
+	ADC_Init(ADC1,&init_ADC);
 //	ADC_ChannelConfig(); //サンプリングレートを設定可能
 
-	ADC_Cmd(ENABLE);
+	ADC_Cmd(ADC1,ENABLE);
 
 	/*End setting*/
 
@@ -67,6 +67,8 @@ int main()
 
 
 	PWM_control(0,30);
+
+	ADC_GetConversionValue();
   // Infinite loop
   while (1)
     {
