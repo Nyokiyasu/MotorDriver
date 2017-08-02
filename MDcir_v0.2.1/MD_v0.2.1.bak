@@ -1,4 +1,5 @@
 EESchema Schematic File Version 2
+LIBS:MD_v0.2.1-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -29,12 +30,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:stm32
-LIBS:YASU
-LIBS:robocon_sch
-LIBS:SamacSys_Parts
-LIBS:thistunalib
 LIBS:MD_v0.2.1-cache
-LIBS:MD_v0.2.1-rescue
 EELAYER 25 0
 EELAYER END
 $Descr A3 16535 11693
