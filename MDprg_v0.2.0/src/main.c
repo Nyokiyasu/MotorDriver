@@ -17,15 +17,15 @@ typedef enum {coast=0,forward,backforward,brake} SUPPLY_STATE_t;
 void PWM_control(uint8_t ch , int8_t  duty);
 void LDEs_init(void);
 void ch0_init(void);
-uint8_t RotarySW_Read(void);
+void CurrentSensor_init(void);
 void RotarySW_init(void);
+uint8_t RotarySW_Read(void);
 
 //	TIM_ITConfig();	//タイマ割り込みをする際に使用する
 
 int main()
 {
 	GPIO_InitTypeDef init_gpio;
-	ADC_InitTypeDef	init_ADC;
 	uint8_t addr = 0;
 
 	/*setting*/
@@ -33,10 +33,10 @@ int main()
 	RCC_PLLConfig(RCC_PLLSource_HSI_Div2,RCC_PLLMul_12);
 	RCC_PLLCmd(ENABLE);
 	RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-	/*LEDs*/
+
 	LDEs_init();
-	/*MotorControlPins*/
 	ch0_init();
+	CurrentSensor_init();
 	RotarySW_init();
 
 	/*LED確認用,PWMのピンをGPIOで初期化*/
@@ -44,26 +44,18 @@ int main()
 	init_gpio.GPIO_Pin = GPIO_Pin_4;
 	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_Init(GPIOA,&init_gpio);
-
 	/*End setting*/
 
-//	GPIO_WriteBit(GPIOA,GPIO_Pin_1,Bit_SET);
-//	GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
-//	GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_SET);
-
 	GPIO_WriteBit(GPIOA,GPIO_Pin_4,Bit_RESET);
-	GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_RESET);
+	GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_SET);
 	GPIO_WriteBit(GPIOB,GPIO_Pin_1,Bit_SET);
 
 
 //	PWM_control(0,50);
 
-//	ADC_GetConversionValue();
-  // Infinite loop
-  while (1)
+	while (1)
     {
-	  addr = RotarySW_Read()&0x03;
-       // Add your code here.
+	  addr = RotarySW_Read();
 	  switch (addr){
 	  case 0:
 		  PWM_control(0,0);
@@ -225,11 +217,10 @@ uint8_t RotarySW_Read(void)
 	return (~data)&0x0f;
 }
 
+void CurrentSensor_init(void)
+{
 
-
-/*
- *
- */
+}
 
 void ch0_init(void)
 {
