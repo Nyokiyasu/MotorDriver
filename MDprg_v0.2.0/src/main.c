@@ -68,7 +68,7 @@ int main()
 
 	PWM_control(0,30);
 
-	ADC_GetConversionValue();
+//	ADC_GetConversionValue();
   // Infinite loop
   while (1)
     {
