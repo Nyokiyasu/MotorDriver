@@ -17,62 +17,83 @@ typedef enum {coast=0,forward,backforward,brake} SUPPLY_STATE_t;
 void PWM_control(uint8_t ch , int8_t  duty);
 void LDEs_init(void);
 void ch0_init(void);
+void CurrentSensor_init(void);
+void RotarySW_init(void);
+uint8_t RotarySW_Read(void);
 
 //	TIM_ITConfig();	//タイマ割り込みをする際に使用する
 
 int main()
 {
-  // At this stage the system clock should have already been configured
-  // at high speed.
-
 	GPIO_InitTypeDef init_gpio;
-	ADC_InitTypeDef	init_ADC;
+	uint8_t addr = 0;
 
 	/*setting*/
-	/*LEDs*/
+	/*メインクロックを8MHzから48MHzへ変更*/
+	RCC_PLLConfig(RCC_PLLSource_HSI_Div2,RCC_PLLMul_12);
+	RCC_PLLCmd(ENABLE);
+	RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+
 	LDEs_init();
-
-	/*MotorControlPin*/
 	ch0_init();
+	CurrentSensor_init();
+	RotarySW_init();
 
-	/*LED確認用*/
-/*	GPIO_StructInit(&init_gpio);
+	/*LED確認用,PWMのピンをGPIOで初期化*/
+	GPIO_StructInit(&init_gpio);
 	init_gpio.GPIO_Pin = GPIO_Pin_4;
 	init_gpio.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_Init(GPIOA,&init_gpio);*/
-
-	/*PORTA*/
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
-
-	GPIO_StructInit(&init_gpio);
-	init_gpio.GPIO_Pin = GPIO_Pin_0;	//1
-	init_gpio.GPIO_Mode = GPIO_Mode_AN;
 	GPIO_Init(GPIOA,&init_gpio);
-
-	ADC_StructInit(&init_ADC);
-	ADC_Init(ADC1,&init_ADC);
-//	ADC_ChannelConfig(); //サンプリングレートを設定可能
-
-	ADC_Cmd(ADC1,ENABLE);
-
 	/*End setting*/
 
-	GPIO_WriteBit(GPIOA,GPIO_Pin_1,Bit_SET);
-//	GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
-	GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_SET);
-
 	GPIO_WriteBit(GPIOA,GPIO_Pin_4,Bit_RESET);
-	GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_RESET);
+	GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_SET);
 	GPIO_WriteBit(GPIOB,GPIO_Pin_1,Bit_SET);
 
 
-	PWM_control(0,30);
+//	PWM_control(0,50);
 
-//	ADC_GetConversionValue();
-  // Infinite loop
-  while (1)
+	while (1)
     {
-       // Add your code here.
+	  addr = RotarySW_Read();
+	  switch (addr){
+	  case 0:
+		  PWM_control(0,0);
+		  break;
+	  case 1:
+		  PWM_control(0,25);
+		  break;
+	  case 2:
+		  PWM_control(0,50);
+		  break;
+	  case 3:
+		  PWM_control(0,75);
+		  break;
+	  case 4:
+		  PWM_control(0,40);
+		  break;
+	  case 5:
+		  PWM_control(0,50);
+		  break;
+	  case 6:
+		  PWM_control(0,60);
+		  break;
+	  case 7:
+		  PWM_control(0,70);
+		  break;
+	  case 8:
+		  PWM_control(0,80);
+		  break;
+	  case 9:
+		  PWM_control(0,90);
+		  break;
+	  case 10:
+		  PWM_control(0,100);
+		  break;
+	  default:
+		  PWM_control(0,0);
+		  break;
+	  }
     }
 }
 
@@ -159,12 +180,47 @@ void LDEs_init(void)
 
 
 	return;
-
 }
 
-/*
- *
- */
+/* -------------------------------------------------
+ * @関数名		:	RotarySW_init
+ * @概要		:	RotarySWに使うGPIOの初期化
+ * @戻り値		:	なし
+ * ---------------------------------------------- */
+void RotarySW_init(void)
+{
+	GPIO_InitTypeDef init_gpio;
+
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
+
+	/*DipSW*/
+	GPIO_StructInit(&init_gpio);
+	init_gpio.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;	//
+	init_gpio.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_Init(GPIOB,&init_gpio);
+
+	return;
+}
+
+/* -------------------------------------------------
+ * @関数名		:	RotarySW_read
+ * @概要		:	RotarySWの読出し
+ * @戻り値		:	なし
+ * ---------------------------------------------- */
+uint8_t RotarySW_Read(void)
+{
+	uint8_t data = 0;
+	data = data|(GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_4) << 0);
+	data = data|(GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_5) << 1);
+	data = data|(GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_6) << 3);
+	data = data|GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_7) << 2;
+	return (~data)&0x0f;
+}
+
+void CurrentSensor_init(void)
+{
+
+}
 
 void ch0_init(void)
 {
@@ -189,7 +245,7 @@ void ch0_init(void)
 
 	/*timer2 ch1*/
 	init_tmr.TIM_Period = 100-1;
-	init_tmr.TIM_Prescaler = 4-1;
+	init_tmr.TIM_Prescaler = 16-1;
 	init_tmr.TIM_ClockDivision = TIM_CKD_DIV1;
 	init_tmr.TIM_CounterMode = TIM_CounterMode_Up;
 	init_tmr.TIM_RepetitionCounter = 0x0000;
@@ -201,8 +257,10 @@ void ch0_init(void)
 	init_OC.TIM_OCIdleState = TIM_OCIdleState_Set;
 	init_OC.TIM_OCPolarity = TIM_OCPolarity_High;
 	TIM_OC3Init(TIM2,&init_OC);
+	TIM_ARRPreloadConfig(TIM2,ENABLE);
+	PWM_control(0,0);
+
 	TIM_Cmd(TIM2,ENABLE);
 
-	TIM_ARRPreloadConfig(TIM2,ENABLE);
 	return;
 }
