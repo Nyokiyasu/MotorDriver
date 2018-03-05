@@ -21,6 +21,8 @@ void CurrentSensor_init(void);
 void RotarySW_init(void);
 uint8_t RotarySW_Read(void);
 
+int8_t Duty;
+
 //	TIM_ITConfig();	//タイマ割り込みをする際に使用する
 
 int main()
@@ -55,45 +57,8 @@ int main()
 
 	while (1)
     {
-	  addr = RotarySW_Read();
-	  switch (addr){
-	  case 0:
-		  PWM_control(0,0);
-		  break;
-	  case 1:
-		  PWM_control(0,25);
-		  break;
-	  case 2:
-		  PWM_control(0,50);
-		  break;
-	  case 3:
-		  PWM_control(0,75);
-		  break;
-	  case 4:
-		  PWM_control(0,40);
-		  break;
-	  case 5:
-		  PWM_control(0,50);
-		  break;
-	  case 6:
-		  PWM_control(0,60);
-		  break;
-	  case 7:
-		  PWM_control(0,70);
-		  break;
-	  case 8:
-		  PWM_control(0,80);
-		  break;
-	  case 9:
-		  PWM_control(0,90);
-		  break;
-	  case 10:
-		  PWM_control(0,100);
-		  break;
-	  default:
-		  PWM_control(0,0);
-		  break;
-	  }
+		  PWM_control(Duty,0);
+
     }
 }
 
@@ -142,16 +107,6 @@ void PWM_control(uint8_t ch , int8_t  duty)
 		//何もないけどチャンネル増えたら書き加える
 	}
 	return;
-}
-
-
-/**
- * @brief	Set PWM by frame of A3941. Param is CAN_frame.
- *
- */
-void PWM_control_CF(void)
-{
-
 }
 
 /**
@@ -217,11 +172,6 @@ uint8_t RotarySW_Read(void)
 	return (~data)&0x0f;
 }
 
-void CurrentSensor_init(void)
-{
-
-}
-
 void ch0_init(void)
 {
 	TIM_TimeBaseInitTypeDef init_tmr;
@@ -245,7 +195,7 @@ void ch0_init(void)
 
 	/*timer2 ch1*/
 	init_tmr.TIM_Period = 100-1;
-	init_tmr.TIM_Prescaler = 16-1;
+	init_tmr.TIM_Prescaler = 30-1;
 	init_tmr.TIM_ClockDivision = TIM_CKD_DIV1;
 	init_tmr.TIM_CounterMode = TIM_CounterMode_Up;
 	init_tmr.TIM_RepetitionCounter = 0x0000;

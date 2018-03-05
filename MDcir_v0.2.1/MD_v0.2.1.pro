@@ -1,4 +1,4 @@
-update=2017/08/01 17:22:25
+update=2017/10/03 13:06:32
 version=1
 last_client=kicad
 [pcbnew]
@@ -75,3 +75,4 @@ LibName33=C:/software/KiCad/share/kicad/Robocon_KicadLibrary2016_3_2/Robocon_Kic
 LibName34=C:/software/KiCad/share/kicad/samacsys_parts/SamacSys_Parts
 LibName35=thistunalib
 LibName36=MD_v0.2.1-cache
+LibName37=C:/Software/KiCad/share/kicad/user/YASU/YASU
